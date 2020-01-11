@@ -155,6 +155,27 @@ if(USE_STATIC_MBEDTLS_LIBRARY)
     install(TARGETS ${mbedtls_static_target} ${mbedx509_static_target} ${mbedcrypto_static_target}
             DESTINATION ${LIB_INSTALL_DIR}
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
+    target_include_directories(${mbedtls_static_target}
+        PUBLIC $<INSTALL_INTERFACE:include>
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/>
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/crypto/include/>)
+
+    target_include_directories(${mbedx509_static_target}
+        PUBLIC $<INSTALL_INTERFACE:include>
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/>
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/crypto/include/>)
+
+    target_include_directories(${mbedcrypto_static_target}
+        PUBLIC $<INSTALL_INTERFACE:include>
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/>
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/crypto/include/>)
+
+    install(TARGETS ${mbedtls_static_target} ${mbedx509_static_target} ${mbedcrypto_static_target}
+            RUNTIME DESTINATION bin
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif(USE_STATIC_MBEDTLS_LIBRARY)
 
 if(USE_SHARED_MBEDTLS_LIBRARY)
@@ -173,9 +194,38 @@ if(USE_SHARED_MBEDTLS_LIBRARY)
     install(TARGETS mbedtls mbedx509 mbedcrypto
             DESTINATION ${LIB_INSTALL_DIR}
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
+    target_include_directories(mbedtls
+        PUBLIC $<INSTALL_INTERFACE:include>
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/>
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/crypto/include/>)
+
+    target_include_directories(mbedx509
+        PUBLIC $<INSTALL_INTERFACE:include>
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/>
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/crypto/include/>)
+
+    target_include_directories(mbedcrypto
+        PUBLIC $<INSTALL_INTERFACE:include>
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/>
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/crypto/include/>)
+
+    install(TARGETS mbedtls mbedx509 mbedcrypto
+            RUNTIME DESTINATION bin
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif(USE_SHARED_MBEDTLS_LIBRARY)
 
 add_custom_target(lib DEPENDS mbedcrypto mbedx509 mbedtls)
 if(USE_STATIC_MBEDTLS_LIBRARY AND USE_SHARED_MBEDTLS_LIBRARY)
     add_dependencies(lib mbedcrypto_static mbedx509_static mbedtls_static)
 endif()
+
+install(
+  TARGETS mbedx509 mbedtls mbedcrypto
+  EXPORT mbedtls-targets
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
+
